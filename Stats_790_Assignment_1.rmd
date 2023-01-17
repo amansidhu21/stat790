@@ -1,0 +1,18 @@
+---
+title: "Stats_790_Assignment_1"
+output: github_document
+---
+
+## Question 1: Write a short description of any opinions, thoughts, or questions you are left with after reading Breiman 2001 and one of the responses to it
+
+## Question 2: Pick a figure from ESL chapter 2 and write R, Python, or Julia code to replicate it
+
+## Question 3: ADA problem 1.2
+
+## Question 4: ADA Problem 1.7
+
+## Question 5: ADA Problem 1.8
+
+## Question 6: ESL Problem 2.8
+
+
