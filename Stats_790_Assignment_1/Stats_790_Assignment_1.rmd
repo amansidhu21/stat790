@@ -11,9 +11,60 @@ output: pdf_document
 
 ## Question 3: ADA Problem 1.2
 
+
 ## Question 4: ADA Problem 1.7 
 
+
+Suppose that the global mean is our linear smoother in this case. Recall that our influence matrix, $w$ is a $n x n$ matrix with the weight, $w_{ij}$ saying how much each observation $y_{ij}$ contributes to the fitted values. 
+
+Observing the classic mean formula of 
+
+$$ \mu =  (\frac{1}{n})*(\Sigma_{i}^{n} y_i) $$
+
+
+We observe the weight is essentially $\frac{1}{n}$ for every entry of the influence matrix $w$. 
+
+To observe this property visually, we construct an influence matrix as so,
+
+$$ w = \begin{pmatrix}
+            1/n   &1/n    & \cdots & 1/n    \\
+            1/n   &1/n    & \cdots & 1/n    \\
+            \vdots & \ddots & \vdots \\
+            1/n   &1/n    & \cdots & 1/n    \\
+        \end{pmatrix}$$
+
+
+
+By Equation (1.70) of the textbook that states
+
+$$ df(\hat\mu) = tr(w) $$
+
+we observe that the trace of $w$ is essentially $tr(w) = \frac{1}{n} + \frac{1}{n} + ... + \frac{1}{n} = 1$.
+
+Thus we conclude that the degrees of freedom for when the global mean is the linear smoother is $df =  1$.
+
 ## Question 5: ADA Problem 1.8
+
+Let us consider the case when k-nearest neighbors regression acts as our linear smoother. Recall that our influence matrix, $w$ is a $n x n$ matrix with the weight, $w_{ij}$ saying how much each observation $y_{ij}$ contributes to the fitted values.
+
+We observe in (1.55) of the textbook that $\hat(w(x_i,x))$ is equal to $1/k$ when $x_i$ is one of the k nearest neighbors of x and 0 otherwise. 
+
+As a result, we obtain a similar matrix to the one in Question (4), where the diagonal entries are strictly $1/k$, which makes sense since the distance would be 0 about the entries of x if they are not considered a k nearest neighbor.
+
+Thus an approximate matrix $w$ for this question can be constructed as so,
+
+$$ w = \begin{pmatrix}
+            1/k   & \cdots    \\
+              &1/k    & \cdots    \\
+            \vdots & \ddots & \vdots \\
+                & \cdots & 1/k    \\
+        \end{pmatrix}$$
+
+Since the matrix is once again $n x n$, we can take the trace of the matrix by Equation (1.70) to obtain the following,
+
+$$tr(w) = \frac{1}{k} + \frac{1}{k} + ... + \frac{1}{k} = \frac{n}{k}$$
+As a result, we see that the degrees of freedom for when k-nearest neighbor regression is a linear smoother is $df = \frac{n}{k}$.
+
 
 ## Question 6: ESL Problem 2.8
 
