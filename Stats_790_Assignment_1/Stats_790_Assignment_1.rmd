@@ -54,10 +54,10 @@ As a result, we obtain a similar matrix to the one in Question (4), where the di
 Thus an approximate matrix $w$ for this question can be constructed as so,
 
 $$ w = \begin{pmatrix}
-            1/k   & \cdots    \\
-              &1/k    & \cdots    \\
-            \vdots & \ddots & \vdots \\
-                & \cdots & 1/k    \\
+            1/k   & \cdots & \cdots &0  \\
+              &1/k    & \cdots  &   \\
+            \vdots & \vdots & \ddots & \vdots \\
+             0   & \cdots & \cdots & 1/k    \\
         \end{pmatrix}$$
 
 Since the matrix is once again $n x n$, we can take the trace of the matrix by Equation (1.70) to obtain the following,
