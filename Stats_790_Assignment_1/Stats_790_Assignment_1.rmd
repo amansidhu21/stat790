@@ -29,7 +29,7 @@ To observe this property visually, we construct an influence matrix as so,
 $$ w = \begin{pmatrix}
             1/n   &1/n    & \cdots & 1/n    \\
             1/n   &1/n    & \cdots & 1/n    \\
-            \vdots & \ddots & \vdots \\
+            \vdots & \vdots & \ddots & \vdots\\
             1/n   &1/n    & \cdots & 1/n    \\
         \end{pmatrix}$$
 
