@@ -135,7 +135,7 @@ All that has been done is breaking up the absolute value into two portions. Now,
 
 $$ = \int_{-\infty}^{m'} (m - m' + m' - x)f(x)dx + 2\int_{m}^{m'}(x-m)f(x)dx + \int_{m'}^{\infty}(x-m' + m' - m)f(x)dx $$
 $$ = E[|x-m|] + 2\int_{m}^{m'} (x-m)f(x)dx + \int_{-\infty}^{m'}(m-m')f(x)dx + \int_{m'}^{\infty}(m'-m)f(x)dx $$
-Note, this cannot be reduced further without the specific values. But, if the mean were equal to the median we could reduce it even further.
+Note, this cannot be reduced further without the specific values. But, if the mean were equal to the median we could reduce it even further. Thus, we conclude that the mean **does not** minimize the MAE.
 
 Now, we must take the derivative and show that the median does indeed minimize the MAE.
 
