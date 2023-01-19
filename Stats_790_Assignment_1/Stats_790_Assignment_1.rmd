@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output: pdf_document
 ---
 
-I collaborated with Yiran Zhang on Question 2
+**\underline{I collaborated with Yiran Zhang on Question 2 and Cameron Roopnarine on Question 3}**
 
 ## Question 1: Write a short description of any opinions, thoughts, or questions you are left with after reading Breiman, 2001, and one of the responses to it
 
