@@ -115,11 +115,44 @@ points(blue_bg_pt, col = "skyblue", pch = 20, cex = 0.2)
 Since, the simulation is sampled randomly this is the best we can do to try and replicate it. The process however is consistent with the process listed in the book.
 
 
-
-
-
 ## Question 3: ADA Problem 1.2
 
+In theory, the MAE is not minimized by m = E[Y}, but rather the **median**. The following steps will prove that the median minimizes the MAE.
+
+Suppose m is some term in the interval and m' is the mean.
+
+
+$$E[|X - m|] = \int_{-\infty}^{\infty} |x- m|f(x) dx$$
+
+$$ = \int_{-\infty}^{m} (m-x)f(x) dx + \int_{m}^{\infty} (m-x) f(x)dx $$
+
+$$ = \int_{-\infty}^{m} (m-x)f(x) dx + \int_{m}^{m'}(x - m)f(x)dx + \int_{m'}^{\infty}(x-m)f(x)dx $$
+
+$$ = \int_{-\infty}^{m'}(m-x)f(x)dx - \int_{m}^{m'}(m-x)dx + \int_{m}^{m'}(x-m)f(x)dx + \int_{m'}^{\infty}(x-m)f(x)dx $$
+
+
+All that has been done is breaking up the absolute value into two portions. Now, with the help of some algebra properties, we can reduce the equation further as so.
+
+$$ = \int_{-\infty}^{m'} (m - m' + m' - x)f(x)dx + 2\int_{m}^{m'}(x-m)f(x)dx + \int_{m'}^{\infty}(x-m' + m' - m)f(x)dx $$
+$$ = E[|x-m|] + 2\int_{m}^{m'} (x-m)f(x)dx + \int_{-\infty}^{m'}(m-m')f(x)dx + \int_{m'}^{\infty}(m'-m)f(x)dx $$
+Note, this cannot be reduced further without the specific values. But, if the mean were equal to the median we could reduce it even further.
+
+Now, we must take the derivative and show that the median does indeed minimize the MAE.
+
+Suppose m is the median.
+
+$$ \frac{\partial}{\partial m} E[|x-m|] = E[\frac{\partial}{\partial m}|x-m|]$$
+$$ = E[\frac{-1(x-m)}{|x-m|}]$$
+$$ = E[1_{x<m} - 1_{x>m}] $$
+
+The 1's in the above are the indicator function. Breaking this into probabilities and setting it equal to zero, we get
+
+$$ P(x < m) - P(x > m) = 0 $$
+
+Now, the only way this is equal to zero is if both terms equal 1/2. But if both of those two terms are 1/2, that means that the median is the minimizing term by definition (i.e. m is the median here).
+
+
+The last part of this question asks whether to use MSE or MAE to measure error. In theory, since the median is more robust to outliers, if the data set may contain outliers it might be best to use the MAE as the minimizing term is the median. However, if the data set contains not many outliers then it may be more optimal to use the MSE as its minimizing term is the mean (as shown in the textbook).
 
 ## Question 4: ADA Problem 1.7 
 
@@ -178,4 +211,79 @@ As a result, we see that the degrees of freedom for when k-nearest neighbor regr
 
 ## Question 6: ESL Problem 2.8
 
+The zipcode data from the book is used for this question as outlined in ESL Chapter 2.
+
+```{r, warning=FALSE, messages = FALSE}
+library(class) #this will be used for knn regression
+
+#set working directory - this was done in rstudio as outlined by Ben
+# setwd('C:/Users/User/Documents/stat790/Stats_790_Assignment_1')
+
+#load in the datasets available online
+#I used as.matrix to get the appropriate data type later during the class
+zip.train <- as.matrix(read.table(gzfile('zip.train.gz')))
+zip.test <- as.matrix(read.table(gzfile('zip.test.gz')))
+
+#Now, as outlined in the question, we must only consider the 2's and 3's
+#Create the training data sets
+X_train <- zip.train[which(zip.train[, 1] == 2 | zip.train[, 1] == 3), -1]
+y_train <- zip.train[which(zip.train[, 1] == 2 | zip.train[, 1] == 3), 1] == 3
+
+#Create the test data sets
+
+X_test <- zip.test[which(zip.test[, 1] == 2 | zip.test[, 1] == 3), -1]
+y_test <- zip.test[which(zip.test[, 1] == 2| zip.test[, 1] == 3), 1] == 3
+
+#Notice that i set the y's as equal to 3 to return a true or false value, this
+#will be important later as we need to differentiate between a 2 or 3
+
+
+#Now, let us compute the linear classification using R
+
+linear_classification <- lm(y_train ~ X_train) #train using the datasets
+
+#set cut-off for linear classification as 0.5
+
+#Find train error rate
+y_hat_train <- (cbind(1, X_train) %*% linear_classification$coefficients) >= 0.5
+train_error <- mean(y_hat_train != y_train)
+
+#Find test error rate
+y_hat_test <- (cbind(1, X_test) %*% linear_classification$coefficients) >= 0.5
+test_error <- mean(y_hat_test != y_test)
+
+
+#Now, compute the k-nn classification for the values given i.e. 1,3,5,7,15
+
+k <- c(1,3,5,7,15)
+
+#set up an empty vector for both the training and test error rates
+k_train_error <- rep(NA, 5)
+k_test_error <- rep(NA, 5)
+
+#create a for loop to iterate through all the k's
+
+for (i in 1:length(k)){
+  
+  y_hat_train <- knn(X_train, X_train, y_train, k[i])
+  y_hat_test <- knn(X_train, X_test, y_train, k[i])
+  k_train_error[i] <- mean(y_hat_train != y_train)
+  k_test_error[i] <- mean(y_hat_test != y_test)
+}
+
+#throw it all in a table for easy visibility
+classification_type <- c("Linear Classification", "k-NN with K = 1", 
+                         "k-NN with K = 3", "k-NN with K = 5", 
+                         "k-NN with K = 7", "k-NN with K = 15")
+training_error_rates <- c(0.005759539, 0.000000000, 0.005039597, 0.005759539,
+                          0.006479482, 0.009359251)
+test_error_rates <- c(0.04120879, 0.02472527, 0.03021978, 0.03021978, 
+                      0.03296703, 0.03846154)
+tab <- data.frame(classification_type, training_error_rates, 
+                     test_error_rates)
+tab
+
+```
+
+As you can see in the table above, the error rate performs best for both the train and test data sets with K = 1 for the k-NN classification technique. As a result, you could argue the smaller the k, the better the model performance. One possible hypothesis that I propose is the argument involving the curse of dimensionality. With the data points far apart, they could actually not be considered near one another.
 
