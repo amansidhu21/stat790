@@ -325,6 +325,11 @@ time.taken2 <- end.time - start.time
 #Test it out
 
 y_pred <- test_x%*%Beta_reg
+
+#calculate mse
+
+mean_squared_error2 <- mean((test_y-y_pred)^2)
+
 Rsq_qr <- 1 - sum((test_y - y_pred)^2)/sum((test_y - mean(test_y))^2)
 
 
@@ -332,7 +337,7 @@ Rsq_qr <- 1 - sum((test_y - y_pred)^2)/sum((test_y - mean(test_y))^2)
 
 **Comparison of the Two Techniques**
 
-Observing the two methods, both have its advantages. Note, I used the same lambda for both methods in order to obtain results that I could compare. One metric I used was the $R^2$ value that can tell us the proportion of variation in the dependent variable that can be attributed to the independent variable. For the native implementation, we observe a value of 0.6614124 which means that 66.1% of the variation is explained by the model using this approach. The time taken for the system to compute this approach was 0.01833105 seconds. Conversely, for the ridge regression by data augmentation (using QR factorization), we observe an $R^2$ value of 0.7054944 which suggests that roughly 71% of the variation is explained by the model which is an improvement. The time taken for this algorithm was 0.007303953 seconds. Note, that although I did the raw steps of the factorization for ridge regression, you could also simply do qr.solve to attain the same result (potentially faster time as well). This means that ridge regression by data augmentation (using QR factorization) outperforms the native implementation of ridge regression (i.e. the 'glmnet' function).
+Observing the two methods, both have its advantages. Note, I used the same lambda for both methods in order to obtain results that I could compare. The MSE for the naive implementation was 0.5681713 whereas the MSE for the QR factorization with ridge regression was 0.494199 (which suggests an improvement). Another metric I used was the $R^2$ value that can tell us the proportion of variation in the dependent variable that can be attributed to the independent variable. For the native implementation, we observe a value of 0.6614124 which means that 66.1% of the variation is explained by the model using this approach. The time taken for the system to compute this approach was 0.01833105 seconds. Conversely, for the ridge regression by data augmentation (using QR factorization), we observe an $R^2$ value of 0.7054944 which suggests that roughly 71% of the variation is explained by the model which is an improvement. The time taken for this algorithm was 0.007303953 seconds. Note, that although I did the raw steps of the factorization for ridge regression, you could also simply do qr.solve to attain the same result (potentially faster time as well). This means that ridge regression by data augmentation (using QR factorization) outperforms the native implementation of ridge regression (i.e. the 'glmnet' function).
 
 \newpage
 
