@@ -169,8 +169,10 @@ truncpolyspline <- function (x, k, natural) {
     for (j in 2:(k-1)) {
       
       #This is the magic (i.e. here we are adding the linear constraint)
-      S[, j] <- ((x > knots[j-1])*(x - knots [j-1])^3  - (x > knots[k])*(x - knots[k])^3)/(knots[k] - knots[j-1]) - 
-        ((x - knots [k-1])^3*(x>knots[k-1])  - (x - knots[k])^3*(x>knots[k]))/(knots[k] - knots[k-1]) 
+      S[, j] <- ((x > knots[j-1])*(x - knots [j-1])^3  - 
+                   (x > knots[k])*(x - knots[k])^3)/(knots[k] - knots[j-1]) - 
+        ((x - knots [k-1])^3*(x>knots[k-1])  - 
+           (x - knots[k])^3*(x>knots[k]))/(knots[k] - knots[k-1]) 
     }
   } else{ #this is when natural constraint is false
     S <- sapply(knots, trunc_fun)
