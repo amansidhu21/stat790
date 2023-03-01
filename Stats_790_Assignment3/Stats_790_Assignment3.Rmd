@@ -153,6 +153,8 @@ Thus, all three basis have a computed predicted value and standard error. The pl
 
 ## Question 3
 
+Essentially, the purprose of this question is to factor in the result of exercise 5.4 from ESL by using the results of (5.4) and (5.5) in the textbook. In other words, we must create an if statement within the truncated polynomial spline function that will account for this type of natural spline. In order to see this, see the code below inside the for loop for S[, j].
+
 ```{r}
 #implement the truncated polynomial spline function from lecture
 truncpolyspline <- function (x, k, natural) {
@@ -187,9 +189,11 @@ truncpolyspline <- function (x, k, natural) {
 
 xvec <- seq(0,100, length = 100)
 
-#Apply the function with both values of natural
+#Apply the function with both values of natural (use K - 4) for natural = FALSE
+#to ensure the number of lines within the plots are the same
+
 tS1 <- truncpolyspline(xvec, k = 5, natural = TRUE)
-tS2 <- truncpolyspline(xvec, k = 5, natural = FALSE)
+tS2 <- truncpolyspline(xvec, k = 1, natural = FALSE)
 
 #Use matplot to plot the graphs
 matplot(scale(tS1), type = 'l', main = "Natural Spline")
