@@ -414,6 +414,8 @@ Now, collecting the last term of the expression above, we can re-add it to the s
 $$ = \sum^{K}_{k=1} \theta_k(X-\xi_k)^3_+$$
 Thus, we have shown that assuming (5.70) and (5.71) to be true, that the basis in (5.4) and (5.5) have been derived (as desired).
 
+**For exercise 5.4, I used theory similar to this link:https://stats.stackexchange.com/questions/172217/why-are-the-basis-functions-for-natural-cubic-splines-expressed-as-they-are-es **
+
 \newpage
 
 **ESL Exercise 5.13**
