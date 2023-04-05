@@ -277,26 +277,46 @@ Using a similar approach as above, we can derive the weights with a binomial dev
 
 Recall the binomial deviance loss function (as a form of the log-loss family) in an equivalent form to ESL pg. 346 as:
 
-$$ l(y, f(x)) = ylog(f(x)) + (1-y)log(1-f(x)) $$
+$$ l(y, p(x)) = ylog(p) + (1-y)log(1-p) $$
 Now, we sub this loss function into the optimal weights equation previously defined.
 
 $$ \hat{\gamma_{jm}} = argmin_{\gamma_{jm}} \sum_{x_i\in R_{jm}} L(y_i, f_{m-1}(x_i) + \gamma_{jm}) $$
 
-$$ = -argmin_{\gamma_{jm}} \sum_{x_i\in R_{jm}} y_ilog(f_{m-1}(x_i) + \gamma_{jm}) + (1-y_i)log(1-f_{m-1}(x_i) - \gamma_{jm})$$
+$$ = -argmin_{\gamma_{jm}} \sum_{x_i\in R_{jm}} y_ilog(p + (1-y_i)log(1-p)$$
 
-Take the derivative with respect to $\gamma_{jm}$:
+$$ =  -argmin_{\gamma_{jm}} \sum_{x_i\in R_{jm}} y_ilog(p + log(1-p) - y_ilog(1-p)$$
 
-$$ = -\sum_{x_i\in R_{jm}} \frac{y_i}{f_{m-1}(x_i) + \gamma_{jm}} - \frac{1-y_i}{1-f_{m-1}(x_i) - \gamma_{jm}} $$
+$$ -argmin_{\gamma_{jm}} \sum_{x_i\in R_{jm}} y_ilog(\frac{p}{1-p}) - log(1-p) $$
+
+But, remember that the terms inside the summation are simply,
+
+$$ log(1-p) = log(1 - \frac{e^{f_{m-1}(x_i) + \gamma_{jm}}}{1 + e^{f_{m-1}(x_i) + \gamma_{jm}}}) = -log(1 + e^{f_{m-1}(x_i) + \gamma_{jm}})$$
+$$ log(\frac{p}{1-p}) = log(p) - log(1-p) = log(e^{f_{m-1}(x_i) + \gamma_{jm}}) = f_{m-1}(x_i) + \gamma_{jm} $$
+
+Now, if we substitute this back into the argmin summation above, 
+
+$$ = \frac{\partial}{\partial \gamma_{jm}} \sum_{x_i\in R_{jm}} -y_i(f_{m-1}(x_i) + \gamma_{jm}) + (-log(1 + e^{f_{m-1}(x_i)) + \gamma_{jm}}) $$
+if we take the derivative with respect to $\gamma_{jm}$ for each leaf (i.e. $L_i$) inside this summation, we get
+
+$$ = \frac{\partial}{\partial \gamma_{jm}} (-y_i\gamma_{jm} + \frac{e^{f_{m-1}(x_i) + \gamma_{jm}}}{1+ e^{f_{m-1}(x_i) + \gamma_{jm}}}) $$
 
 Simplifying the term and setting it to 0:
 
-$$ 0 =  -\sum_{x_i\in R_{jm}} \frac{y_i - f_{m-1}(x_i) - \gamma_{jm}}{(f_{m-1}(x_i) + \gamma_{jm})(1-f_{m-1}(x_i) - \gamma_{jm})} $$
+$$ 0 =  -y_i + \frac{e^{f_{m-1}(x_i) + \gamma_{jm}}}{1+ e^{f_{m-1}(x_i) + \gamma_{jm}}} $$
 
 Solving for $\gamma_{jm}$ :
 
-$$ \gamma_{jm} = \sum_{x_i\in R_{jm}} y_i - (f_{m-1}(x_i)) $$
+$$ y_i = \frac{e^{f_{m-1}(x_i) + \gamma_{jm}}}{1+ e^{f_{m-1}(x_i) + \gamma_{jm}}} $$
+$$ y_i(1+ e^{f_{m-1}(x_i) + \gamma_{jm}}) = e^{f_{m-1}(x_i) + \gamma_{jm}}$$
+$$ y_i + y_i(e^{f_{m-1}(x_i) + \gamma_{jm}}) = e^{f_{m-1}(x_i) + \gamma_{jm}} $$
+$$ y_i = e^{f_{m-1}(x_i) + \gamma_{jm}} - y_i(e^{f_{m-1}(x_i) + \gamma_{jm}}) $$
+$$ y_i = e^{f_{m-1}(x_i) + \gamma_{jm}}(1 - y_i)$$
 
-Note, here because we are dealing with the binomial deviance (or equivalently the log-likelihood loss function), $y_i$ is the observed probability and $f_{m-1}(x_i)$ is the predicted probability. So, $\gamma_{jm}$ is simply the difference between the two.
+Taking the log,
+
+$$log(\frac{y}{1-y_i}) = f_{m-1}(x_i) + \gamma_{jm}$$
+$$\gamma_{jm} = p - f_{m-1}(x_i) $$
+So, we interpret this result as the difference between p and the predicted probability of the model using the binomial deviance loss function **per** leaf (as we solved for each value in the summation).
 
 
 The only sources I used for this problem was ESL II to obtain the loss functions and the papers mentioned by the assignment.
@@ -304,9 +324,11 @@ The only sources I used for this problem was ESL II to obtain the loss functions
 
 **(b) Do the same for Newton boosting (Chen and Guestrin 2016), where we use a second-order rather than a first-order approximation to the loss function.**
 
+In the (Chen and Guestrin 2016) paper, we observe that the newtons boosting optimal weights can be obtained using second order approximations!
+
 **Derive the Newton boosting weight assuming a second-order approximation for the MSE Loss**
 
-As suggested by : https://www.youtube.com/watch?v=StWY5QWMXCw, we can use a second order taylor approximation to get the newtons boosting estimate.
+As suggested by (Chen and Guestrin(2016)) : https://www.youtube.com/watch?v=StWY5QWMXCw, we can use a second order taylor approximation to get the newtons boosting estimate. 
 
 Basically, we need to use second-order approximations of the two loss functions to get the optimal weights for newton's boosting.
 
@@ -334,24 +356,25 @@ which is simply the average of residuals at each leaf!
 
 **Derive the Newton Boosting Weight using binomial loss function**
 
-
 So, let us find a second order taylor approximation of the likelihood.
 
 Using the equivalent form of 10.18 on page 346 of ESL II, we observe that the likelihood is:
 
-$$ L = y_ilog(f_{m-1}(x_i) + \gamma_{jm}) + (1-y_i)log(1 - f_{m-1}(x_i) - \gamma_{jm}) $$
+$$ L = y_ilog(p) + (1-y_i)log(1 - p) $$
 
-$$ L \approx L(y_i, f_{m-1}(x_i)) + L'(y, f_{m-1}(x_i))\gamma + 1/2*L''(y_i, f_{m-1}(x_i))\gamma^2 $$
+$$ L \approx L(y_i, p) + L'(y, p)\gamma + 1/2*L''(y_i,p)\gamma^2 $$
 Ignoring the first term, we take the derivative with respect to $\gamma$.
 
-$$\frac{\partial L }{\partial \gamma} \approx L'(y, f_{m-1}(x_i)) + L''(y_i, f_{m-1}(x_i))\gamma $$
+$$\frac{\partial L }{\partial \gamma} \approx L'(y, p) + L''(y_i, p)\gamma $$
+
+
 Solving for $\gamma$, 
 
-$$ \gamma = \frac{L'(y, f_{m-1}(x_i))}{L''(y_i, f_{m-1}(x_i))}$$
-$$ \gamma = \frac{\frac{y_i - f_{m-1}(x_i)}{(f_{m-1}(x_i))(1-f_{m-1}(x_i)}}{\frac{f_{m-1}^2(x_i) - 2y_i f_{m-1}(x_i) + y_i}{(f_{m-1}(x_i)-1)^2f_{m-1}^2(x_i)}} $$
+$$ \gamma = -\frac{L'(y, p)}{L''(y_i, p)}$$
+$$ \gamma = -\frac{\frac{y_i - p}{p(1-p)}}{\frac{p^2(x_i) - 2y_i p + y_i}{p-1)^2p^2}} $$
 
 Simplifying this further, we arrive at the conclusion of:
 
-$$\gamma_{jm} = \frac{y_i - f_{m-1}(x_i)}{f_{m-1}(x_i)(1-f_{m-1}(x_i))} $$
+$$\gamma_{jm} = \frac{p- y_i}{p(1-p)} $$
 
-which is essentially the residual divided by predicted probability multiplied by 1 minus the predicted probability. Recall that the residual is essentially the observed probability minus the predicted probability.
+which is essentially the residual (derived in 2a!) divided by p multiplied by (1-P).
