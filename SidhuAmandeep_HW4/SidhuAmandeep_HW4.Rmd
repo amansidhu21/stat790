@@ -88,6 +88,8 @@ df_rec <- recipe(diagnosis ~., data = train_data)
 ```
 Later on when we tune the parameters, we will see we need the diagnosis to be a factor. All that was done in the above step was scale certain features/variables by taking the log to get values closer to the other variables or else the magnitude would have been much higher in those parameters. Notice now how much tighter the variables are for the boxplot (the same variables were displayed as in step 2). The pairsplot seems to have gotten better linear relationship with most of the variables displayed in step 2 but there appears to be somewhat of a curve relationship for the first 3 variables. Overall, the scaling implemented here seems to have a positive effect on the data. Thus, we will keep this change. I have also encoded the malignant cancer types as 1 and the benign as 0 as this will help the classification problem later (i.e. here we are dealing with the binary response variable). We also dropped the patient ID column as this has no effect on the model for classification purposes.
 
+Here, I also split the data into an arbitrary split (in this case the standard 75-25 train/test)!
+
 **Step 4: model choice [What model classes did you pick? Why?]**
 
 The model choice I have selected is BART (Bayesian Additive Regression Trees). Recall from lecture that this method is a sum-of-trees model to try and approximate an unknown function. We have selected this option because it is a totally acceptable algorithm for classification and regression problems (in this case we are using it for a classification problem as we are trying to classify patients into malignant and benign cancer types). Moreover, it is deemed often as more robust to outliers and missing values in the data set. This is very useful in our scenario just to provide a safety net to missing potential outliers in the data set even though we have scaled variables. The reason I have selected this over CART (classification and regression trees) as it can provide a more flexible approach to the problem (just in case the model is not linear). The computational cost is slightly more in BART than CART but that is the price of being more flexible. 
@@ -163,9 +165,17 @@ fit <- final_flow %>%
 #metrics- remember we only care about the classification ones and not the 
 #rsq and rmse reserved for regression in the tuning documentation
 collect_metrics(fit)
-
 ```
 As we can see, the 'roc_auc' is 0.9984486 and the accuracy is 0.9720280, which is great performance. 
+
+Now, let us find the misclassification rate.
+
+```{r}
+ypreds <- fit$.predictions[[1]]["diagnosis"]
+mis_clas <- mean(ypreds != test_data["diagnosis"])
+mis_clas
+```
+So, we observe that there were no misclassified diagnosis given our BART model. This aligns with the accuracy and roc_auc curves.
 
 **Step 7: evaluate and explain the results of the model [partial dependence plots, variable importance, etc.]**
 
